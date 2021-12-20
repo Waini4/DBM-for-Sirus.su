@@ -66,7 +66,7 @@ local warned_preP2 = false
 
 
 mod.vb.PreHuy = 0
-mod.vb.Reflect = 0
+mod.vb.FearMili = 0
 mod:AddBoolOption("BossHealthFrame", true, "misc")
 mod:AddBoolOption("AnnounceFails", true, "announce")
 mod:AddBoolOption("GibVr", false)
@@ -75,13 +75,13 @@ local FearTargets	= {}
 function mod:OnCombatStart(delay)
     DBM:FireCustomEvent("DBM_EncounterStart", 50612, "Murozond")
 	self.vb.PreHuy = 0
-	self.vb.Reflect = 0
+	self.vb.FearMili = 0
 	mod:SetStage(1)
-	TerrifyingFuture:Start()
 	if mod:IsDifficulty("heroic25") then
 		NewPrePhaseAnnounce:Start(nil, self.vb.PreHuy+1)
 		SummoningtheTimeless:Start(10)
 		ReflectSpellsCD:Start(24)
+		TerrifyingFutureHM:Start()
 		TimeTrapCD:Start(30)
 		if self.Options.GibVr then
 		GibVremea:Start()
@@ -91,6 +91,7 @@ function mod:OnCombatStart(delay)
 		DistortionWave:Start(20)
 		SummoningtheTimeless:Start(35)
 		BreathofInfinity:Start()
+		TerrifyingFuture:Start()
 	end
 	if self.Options.BossHealthFrame then
 		DBM.BossHealth:Show(L.name)
