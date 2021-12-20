@@ -23,10 +23,10 @@ L:SetWarningLocalization{
 }
 
 L:SetOptionLocalization{
-	TimerMarkOfHydross      = DBM_CORE_AUTO_TIMER_OPTIONS.next:format(38215, GetSpellInfo(38215) or "unknown"),
-	TimerMarkOfCorruption   = DBM_CORE_AUTO_TIMER_OPTIONS.next:format(38219, GetSpellInfo(38219) or "unknown"),
-	WarnMarkOfHydross       = DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(38215, GetSpellInfo(38215) or "unknown"),
-	WarnMarkOfCorruption    = DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(38219, GetSpellInfo(38219) or "unknown"),
+	TimerMarkOfHydross      = "Таймер $spell:38215",
+	TimerMarkOfCorruption   = "Таймер $spell:38219",
+	WarnMarkOfHydross       = DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(38215, GetSpellInfo(38215)),
+	WarnMarkOfCorruption    = DBM_CORE_AUTO_ANNOUNCE_OPTIONS.spell:format(38219, GetSpellInfo(38219)),
 	SpecWarnThreatReset     = "Спец. предупреждение о сбрасывании угрозы",
 	SetIconOnSklepTargets   = "Устанавливать иконки на цели $spell:309046",
 	SetIconOnKorTargets     = "Устанавливать иконки на цели $spell:309065",
@@ -94,12 +94,13 @@ L:SetWarningLocalization{
 L:SetOptionLocalization{
 	TimerDemon = "Отсчет времени до превращения в демона",
 	TimerNormal = "Отсчет времени до конца формы демона",
-	TimerInnerDemons = DBM_CORE_AUTO_TIMER_OPTIONS.active:format(37676, GetSpellInfo(37676) or "unknown"),
-	KleiIcon		= DBM_CORE_AUTO_ICONS_OPTION_TEXT:format(310496),
+	TimerInnerDemons = "Таймер $spell:37676",
+	KleiIcon			= DBM_CORE_AUTO_ICONS_OPTION_TEXT:format(310496),
 	SetIconOnDemonTargets = "Устанавливать иконки на цели демонов",
 	SetIconOnPepelTargets = "Устанавливать иконки на цели испепеления",
 	WarnPhase2Soon			= "Предупреждать заранее о переходе в фазу 2 (на ~37%)",
 	AnnounceKlei			= "Объявлять игроков, на кого установлено клеймо, в рейд чат",
+	IncinerateShieldFrame		= "Показать здоровье босса с индикатором здоровья для Испепеления",
 	AnnouncePepel			= "Объявлятьв игроков, на кого установлено испепеление, в рейд чат "
 }
 
@@ -108,6 +109,7 @@ L:SetMiscLocalization{
 	YellDemon       = "Прочь, жалкий эльф. Настало мое время!",
 	YellShadow      = "Нет... нет! Что вы наделали? Я – главный! Слышишь меня? Я... Ааааах! Мне его... не удержать.",
 	PepelIcon	= "Испепеление {rt%d} установлено на %s",
+	IncinerateTarget	= "Испепеление: %s",
 	Klei		= "Клеймо {rt%d} установлено на %s"
 }
 
@@ -157,8 +159,10 @@ L:SetWarningLocalization{
 }
 
 L:SetOptionLocalization{
+	HealthFrameBoss	= "Показывать здоровье боссов в фазе 1",
 	WarnPhase2Soon			= "Предупреждать заранее о переходе в фазу 2 (на ~52%)",
 	SetIconOnSvazTargets = "Устанавливать иконки на цели испепеления",
+	SetIconOnStrela	= "Устанавливать иконки на цель стрелы",
 	AnnounceSvaz			= "Объявлятьв игроков, на кого установлено $spell:309261, в рейд чат ",
 	WarnKaraTarget = "Обьявлять цели преследуемые Каратесом",
 	SpecWarnKaraTarget = "Спец. предупреждение для преследуемого Каратесом",
@@ -168,7 +172,11 @@ L:SetOptionLocalization{
 L:SetMiscLocalization{
 	YellPull        = "Стража, к бою! У нас гости...",
 	SvazIcon	= "Пламенная свзь {rt%d} установлена на %s",
-	KaraTarget = "смотрит на |3%-3%([%w\128-\255]+%)."
+	KaraTarget = "смотрит на |3%-3%([%w\128-\255]+%).",
+	Karat	= "Каратресс",
+	Volni	= "Волниис",
+	Shark	= "Шарккис",
+	Karib	= "Карибдис",
 }
 
 --Vashj

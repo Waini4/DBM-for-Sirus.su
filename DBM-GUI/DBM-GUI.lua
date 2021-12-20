@@ -1022,7 +1022,7 @@ function UpdateAnimationFrame(mod)
 		DBM_BossPreview:SetScript("OnUpdate", FixCameraAnimationFrame)
 	else
 		local _, y, z = DBM_BossPreview:GetPosition()
-		DBM_BossPreview:SetPosition(0.4, y, z)
+		DBM_BossPreview:SetPosition(0.2, y, z)
 	end
 	if mod.modelSoundShort and DBM.Options.ModelSoundValue == "Short" then
 		DBM:PlaySoundFile(mod.modelSoundShort)
@@ -1035,9 +1035,9 @@ local function CreateAnimationFrame()
 	modelFrameCreated = true
 	local mobstyle = CreateFrame('DressUpModel', "DBM_BossPreview", DBM_GUI_OptionsFramePanelContainer)
 	mobstyle:SetPoint("BOTTOMRIGHT", DBM_GUI_OptionsFramePanelContainer, "BOTTOMRIGHT", -5, 5)
-	mobstyle:SetWidth(300)
-	mobstyle:SetHeight(230)
-	mobstyle:SetRotation(0)
+	mobstyle:SetWidth(525)
+	mobstyle:SetHeight(488)
+	mobstyle:SetRotation(0.1)
 	mobstyle:SetClampRectInsets(0, 0, 24, 0)
 	return mobstyle
 end
@@ -3212,6 +3212,8 @@ local function CreateOptionsMenu()
 		local Sounds = MixinSharedMedia3("sound", {
 			{text = L.NoSound,			value = "None"},
 			{text = "Muradin: Charge",	value = "Sound\\Creature\\MuradinBronzebeard\\IC_Muradin_Saurfang02.wav", sound = true},
+			{text = "Mango",	value = "Interface\\AddOns\\DBM-Core\\sounds\\Custom\\pull_mango.ogg", sound = true},
+
 		})
 
 		local eventSoundsPanel	 	= DBM_GUI_Frame:CreateNewPanel(L.Panel_EventSounds, "option")
@@ -3536,9 +3538,9 @@ local function CreateOptionsMenu()
 
 	-- Set Revision // please don't translate this!
 	if DBM.NewerVersion then
-		DBM_GUI_OptionsFrameRevision:SetText("Deadly Boss Mods "..DBM.DisplayVersion.." ("..DBM:ShowRealDate(DBM.Revision).."). |cffff0000Version "..DBM.NewerVersion.." is available.|r")
+		DBM_GUI_OptionsFrameRevision:SetText(DBM.DisplayVersion.." ("..DBM:ShowRealDate(DBM.Revision).."). |cffff0000Version "..DBM.NewerVersion.." is available.|r")
 	else
-		DBM_GUI_OptionsFrameRevision:SetText("Deadly Boss Mods "..DBM.DisplayVersion.." ("..DBM:ShowRealDate(DBM.Revision)..")")
+		DBM_GUI_OptionsFrameRevision:SetText(DBM.DisplayVersion.." ("..DBM:ShowRealDate(DBM.Revision)..")")
 	end
 	if L.TranslationBy then
 		DBM_GUI_OptionsFrameTranslation:SetText(L.TranslationByPrefix .. L.TranslationBy)

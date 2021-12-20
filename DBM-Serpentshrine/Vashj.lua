@@ -7,7 +7,7 @@ mod:SetCreatureID(21212)
 mod:RegisterCombat("combat", 21212)
 mod:SetUsedIcons(7, 8)
 
-mod:RegisterEvents(
+mod:RegisterEventsInCombat(
 	"CHAT_MSG_MONSTER_YELL",
 	"SPELL_CAST_START",
 	"SPELL_CAST_SUCCESS",
@@ -48,20 +48,19 @@ local warnPhase3     	 		 = mod:NewPhaseAnnounce(3)
 
 local specWarnStaticAnger  	 	 = mod:NewSpecialWarningMove(310636, nil, nil, nil, 4, 5) -- Статический заряд на игроке
 local specWarnStaticAngerNear	 = mod:NewSpecialWarning("SpecWarnStaticAngerNear", 310636, nil, nil, 1, 2) -- Статический заряд около игрока
-
+local yellStaticAnger			= mod:NewYell(310636)
+local yellStaticAngerFade		= mod:NewShortFadesYell(310636)
+local yellStaticAngerPhase2		= mod:NewYell(310659, nil, nil, nil, "YELL")
+local yellStaticAngerPhase2Fade	= mod:NewShortFadesYell(310659, nil, nil, nil, "YELL")
 local timerStaticAngerCD 	     = mod:NewCDTimer(15, 310636, nil, nil, nil, 3) -- Статический заряд
 local timerStaticAnger     		 = mod:NewTargetTimer(8, 310636, nil, nil, nil,3) -- Статический заряд на игроке
 local timerElemCD     			 = mod:NewCDTimer(60, 310635, nil, nil, nil, 1) -- Элементали
-
-
-
 
 
 mod:AddBoolOption("Elem")
 mod:AddSetIconOption("SetIconOnStaticTargets", 310636, true, true, {7, 8})
 mod:AddBoolOption("AnnounceStatic", false)
 
-mod.vb.phase = 0
 local ti = true
 local warned_elem = false
 local warned_preP1 = false
@@ -155,7 +154,7 @@ end
 function mod:OnCombatStart(delay)
 	DBM:FireCustomEvent("DBM_EncounterStart", 21212, "Lady Vashj")
 	ti = true
-	self.vb.phase = 1
+	self:SetStage(1)
 	if mod:IsDifficulty("heroic25") then
 		DBM.RangeCheck:Show(20)
 		timerElemCD:Start(10)
@@ -186,6 +185,8 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif spellId == 310636 then -- хм заряд
 		if args:IsPlayer() then
 			specWarnStaticAnger:Show()
+			yellStaticAnger:Yell()
+			yellStaticAngerFade:Countdown(spellId)
 		else
 			local uId = DBM:GetRaidUnitId(args.destName)
 			if uId and self.vb.phase == 1 then
@@ -207,6 +208,8 @@ function mod:SPELL_AURA_APPLIED(args)
 	elseif spellId == 310659 then -- хм заряд
 		if args:IsPlayer() then
 			specWarnStaticAnger:Show()
+			yellStaticAngerPhase2:Yell()
+			yellStaticAngerPhase2Fade:Countdown(spellId)
 		else
 			local uId = DBM:GetRaidUnitId(args.destName)
 			if uId and self.vb.phase == 1 then
@@ -239,8 +242,18 @@ function mod:SPELL_SUMMON(args)
 	end
 end
 
+function mod:SPELL_AURA_REMOVED(args)
+	local spellId = args.spellId
+	if spellId == 310636 or spellId == 310659 then
+		if self.Options.SetIconOnStaticTargets then
+			self:SetIcon(args.destName, 0)
+		end
+	end
+end
+
 function mod:SPELL_CAST_SUCCESS(args)
-	if args:IsSpellID(38280) then
+	local spellId = args.spellId
+	if spellId == 38280 then
 		warnCharge:Show(args.destName)
 		timerCharge:Start(args.destName)
 		if args:IsPlayer() then
@@ -282,7 +295,7 @@ function mod:UNIT_HEALTH(uId)
 	end
 	if self.vb.phase == 1 and not warned_preP2 and self:GetUnitCreatureId(uId) == 21212 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.70 then
 		warned_preP2 = true
-		self.vb.phase = 2
+		self:SetStage(2)
 		warnPhase2:Show()
 	end
 	if mod:IsDifficulty("heroic25") then
@@ -292,14 +305,14 @@ function mod:UNIT_HEALTH(uId)
 		end
 		if self.vb.phase == 2 and not warned_preP4 and self:GetUnitCreatureId(uId) == 21212 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.40 then
 			warned_preP4 = true
-			self.vb.phase = 3
+			self:SetStage(3)
 			warnPhase3:Show()
 			timerElemCD:Cancel()
 		end
 	else
 		if self.vb.phase == 2 and not warned_preP4 and self:GetUnitCreatureId(uId) == 21212 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.50 then
 			warned_preP4 = true
-			self.vb.phase = 3
+			self:SetStage(3)
 			warnPhase3:Show()
 		end
 	end
@@ -311,8 +324,10 @@ function mod:UNIT_TARGET()
 	end
 end
 
-function mod:OnCombatEnd()
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 21212, "Lady Vashj", wipe)
 	self:UnscheduleMethod("NextStrider")
 	self:UnscheduleMethod("NextNaga")
 	self:UnscheduleMethod("ElementalSoon")
+	DBM.RangeCheck:Hide()
 end

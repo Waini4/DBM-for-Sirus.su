@@ -1,25 +1,25 @@
 local mod	= DBM:NewMod("YoggSaron", "DBM-Ulduar")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210425232323")
+mod:SetRevision("20210625152323")
 
 mod:SetCreatureID(33288)
 mod:RegisterCombat("yell", L.YellPull)
-mod:SetUsedIcons(6, 7, 8)
+mod:SetUsedIcons(8, 7, 6, 2, 1)
 
-mod:RegisterEvents(
+mod:RegisterEventsInCombat(
 	"SPELL_CAST_START",
 	"SPELL_CAST_SUCCESS",
 	"SPELL_SUMMON",
 	"SPELL_AURA_APPLIED",
 	"SPELL_AURA_REMOVED",
-	"SPELL_AURA_REMOVED_DOSE",
-	"UNIT_HEALTH"
+	"UNIT_HEALTH",
+	"UNIT_DIED",
+	"SPELL_AURA_REMOVED_DOSE"
 )
 
 
 local warnMadness 					= mod:NewCastAnnounce(313003, 2)
-local warnFervorCast 				= mod:NewCastAnnounce(312989, 3)
 local warnSqueeze					= mod:NewTargetAnnounce(313031, 3)
 local warnFervor					= mod:NewTargetAnnounce(312989, 4)
 local warnDeafeningRoarSoon			= mod:NewPreWarnAnnounce(313000, 5, 3)
@@ -29,49 +29,57 @@ local warnP2 						= mod:NewPhaseAnnounce(2, 2)
 local warnP3 						= mod:NewPhaseAnnounce(3, 2)
 local warnSanity 					= mod:NewAnnounce("WarningSanity", 3, 63050)
 local warnBrainLink 				= mod:NewTargetAnnounce(312995, 3)
-local warnBrainPortalSoon			= mod:NewAnnounce("WarnBrainPortalSoon", 2)
+local warnBrainPortalSoon			= mod:NewAnnounce("WarnBrainPortalSoon", 2, 57687)
 local warnEmpowerSoon				= mod:NewSoonAnnounce(313014, 4)
 
-local specWarnGuardianLow 			= mod:NewSpecialWarning("SpecWarnGuardianLow", false)
-local specWarnBrainLink 			= mod:NewSpecialWarningYou(312995)
+local specWarnBrainLink 			= mod:NewSpecialWarningMoveTo(312995, nil, nil, nil, 1, 2)
 local specWarnSanity 				= mod:NewSpecialWarning("SpecWarnSanity")
 local specWarnMadnessOutNow			= mod:NewSpecialWarning("SpecWarnMadnessOutNow")
-local specWarnBrainPortalSoon		= mod:NewSpecialWarning("specWarnBrainPortalSoon", false)
-local specWarnDeafeningRoar			= mod:NewSpecialWarningSpell(313000)
-local specWarnFervor				= mod:NewSpecialWarningYou(312989)
-local specWarnFervorCast			= mod:NewSpecialWarning("SpecWarnFervorCast", mod:IsMelee())
-local specWarnMaladyNear			= mod:NewSpecialWarning("SpecWarnMaladyNear", true)
+local specWarnDarkVolley			= mod:NewSpecialWarningInterrupt(314683, "HasInterrupt", nil, 2, 1, 2)
+local specWarnLunaricGaze			= mod:NewSpecialWarningLookAway(313002, nil, nil, nil, 1, 2)
+local specWarnDeafeningRoar			= mod:NewSpecialWarningCount(313000, nil, nil, nil, 1, 2)
+local specWarnFervor				= mod:NewSpecialWarningYou(312989, nil, nil, nil, 1, 2)
+local specWarnMaladyNear			= mod:NewSpecialWarningClose(313029, nil, nil, nil, 1, 2)
+local yellSqueeze					= mod:NewYell(313031)
+local yellBrainLink					= mod:NewYell(312994)
+local yellBrainLinkFade				= mod:NewShortFadesYell(312994)
 
-mod:AddBoolOption("WarningSqueeze", true, "announce")
 
 local enrageTimer					= mod:NewBerserkTimer(900)
-local timerFervor					= mod:NewTargetTimer(15, 312989)
-local brainportal					= mod:NewTimer(20, "NextPortal")
-local timerLunaricGaze				= mod:NewCastTimer(4, 312002)
-local timerNextLunaricGaze			= mod:NewCDTimer(8.5, 312002)
-local timerEmpower					= mod:NewCDTimer(46, 64465)
-local timerEmpowerDuration			= mod:NewBuffActiveTimer(10, 64465)
-local timerMadness 					= mod:NewCastTimer(60, 313003)
-local timerCastDeafeningRoar		= mod:NewCastTimer(2.3, 313000)
-local timerNextDeafeningRoar		= mod:NewNextTimer(30, 313000)
-local timerAchieve					= mod:NewAchievementTimer(420, 3012, "TimerSpeedKill")
+local timerMaladyCD					= mod:NewCDTimer(18.1, 313029, nil, nil, nil, 3)
+local timerBrainLinkCD				= mod:NewCDTimer(25.5, 312995, nil, nil, nil, 3)
+local timerFervor					= mod:NewTargetTimer(15, 312989, nil, false, 2)
+local brainportal					= mod:NewTimer(20, "NextPortal", 57687, nil, nil, 5)
+local brainportal2					= mod:NewCDTimer(60, 64775, nil, nil, nil, 3)
+local timerLunaricGaze				= mod:NewCastTimer(4, 313002, nil, nil, nil, 2)
+local timerNextLunaricGaze			= mod:NewCDTimer(8.5, 313002, nil, nil, nil, 2)
+local timerEmpower					= mod:NewCDTimer(46, 64465, nil, nil, nil, 3)
+local timerEmpowerDuration			= mod:NewBuffActiveTimer(10, 64465, nil, nil, nil, 3)
+local timerMadnessCD				= mod:NewCDTimer(60, 313003, nil, nil, nil, 3)
+local timerCastDeafeningRoar		= mod:NewCastTimer(2.3, 313000, nil, nil, nil, 2)
+local timerNextDeafeningRoar		= mod:NewCDCountTimer(25, 313000, nil, nil, nil, 2)
+local timerAchieve					= mod:NewAchievementTimer(420, 3013)
 
-mod:AddBoolOption("ShowSaraHealth")
-mod:AddBoolOption("SetIconOnFearTarget")
-mod:AddBoolOption("SetIconOnFervorTarget")
-mod:AddBoolOption("SetIconOnBrainLinkTarget")
-mod:AddBoolOption("MaladyArrow")
-mod:AddBoolOption("YellOnDeathCoil", true)
+mod:AddSetIconOption("SetIconOnFearTarget", 313029, true, false, {6})
+mod:AddBoolOption("ShowSaraHealth", true)
+mod:AddSetIconOption("SetIconOnFervorTarget", 312989, false, false, {7})
+mod:AddSetIconOption("SetIconOnBrainLinkTarget", 312995, true, false, {7, 8})
+mod:AddSetIconOption("SetIconOnBeacon", 64465, true, true, {1, 2, 3, 4, 5, 6, 7, 8})
 
-local phase							= 1
-local targetWarningsShown			= {}
+mod.vb.brainLinkIcon = 2
+mod.vb.RoarCount = 0
 local brainLinkTargets = {}
-local brainLinkIcon = 7
+local beaconIcon = 8
 local Guardians = 0
+--mod.vb.numberOfPlayers = 1
 
 function mod:OnCombatStart(delay)
+	DBM:FireCustomEvent("DBM_EncounterStart", 33288, "YoggSaron")
+	self.vb.brainLinkIcon = 2
+	self.vb.RoarCount = 0
+	beaconIcon = 8
 	Guardians = 0
-	phase = 1
+	self:SetStage(1)
 	enrageTimer:Start()
 	timerAchieve:Start()
 	if self.Options.ShowSaraHealth and not self.Options.HealthFrame then
@@ -80,46 +88,63 @@ function mod:OnCombatStart(delay)
 	if self.Options.ShowSaraHealth then
 		DBM.BossHealth:AddBoss(33134, L.Sara)
 	end
-	table.wipe(targetWarningsShown)
 	table.wipe(brainLinkTargets)
 end
 
-function mod:FervorTarget()
-	local targetname = self:GetBossTarget(33134)
-	if not targetname then return end
-	if targetname == UnitName("player") then
-		specWarnFervorCast:Show()
+function mod:OnCombatEnd(wipe)
+	DBM:FireCustomEvent("DBM_EncounterEnd", 33288, "YoggSaron", wipe)
+	if self.Options.InfoFrame then
+		DBM.InfoFrame:Hide()
 	end
 end
 
-function mod:warnBrainLink()
+function mod:FervorTarget(targetname, uId)
+	if not targetname then return end
+	if targetname == UnitName("player") and self:AntiSpam(4, 1) then
+		specWarnFervor:Show()
+		specWarnFervor:Play("targetyou")
+	end
+end
+
+local function warnBrainLinkWarning(self)
 	warnBrainLink:Show(table.concat(brainLinkTargets, "<, >"))
+	timerBrainLinkCD:Start()--VERIFY ME
 	table.wipe(brainLinkTargets)
-	brainLinkIcon = 7
+	self.vb.brainLinkIcon = 2
 end
 
 function mod:SPELL_CAST_START(args)
-	if args:IsSpellID(313003) then	-- Induce Madness
-		timerMadness:Start()
+	if args:IsSpellID(312650, 313003, 64059) then	-- Induce Madness
 		warnMadness:Show()
-		brainportal:Schedule(60)
-		warnBrainPortalSoon:Schedule(78)
-		specWarnBrainPortalSoon:Schedule(78)
 		specWarnMadnessOutNow:Schedule(55)
-	elseif args:IsSpellID(313000) then		--Deafening Roar
-		timerNextDeafeningRoar:Start()
-		warnDeafeningRoarSoon:Schedule(55)
+	elseif args:IsSpellID(313000, 64189, 312647) then		--Deafening Roar
+		self.vb.RoarCount = self.vb.RoarCount + 1
 		timerCastDeafeningRoar:Start()
-		specWarnDeafeningRoar:Show()
+		specWarnDeafeningRoar:Show(self.vb.RoarCount)
+		timerNextDeafeningRoar:Start(nil, self.vb.RoarCount+1)
+		specWarnDeafeningRoar:Play("silencesoon")
 	elseif args:IsSpellID(312989) then		--Sara's Fervor
 		self:ScheduleMethod(0.1, "FervorTarget")
-		warnFervorCast:Show()
+	elseif args:IsSpellID(63038, 312644, 312997, 314683) then
+		specWarnDarkVolley:Show()
 	end
 end
 
 function mod:SPELL_CAST_SUCCESS(args)
 	if args:IsSpellID(64144) and self:GetUnitCreatureId(args.sourceGUID) == 33966 then
 		warnCrusherTentacleSpawned:Show()
+	elseif args.spellId == 64465 and self:AntiSpam(3, 4) then
+		timerEmpower:Start()
+		timerEmpowerDuration:Start()
+		warnEmpowerSoon:Schedule(40)
+	elseif args:IsSpellID(313001, 313002, 313027, 313028) and self:AntiSpam(3, 3) then	-- Lunatic Gaze
+		--timerLunaricGaze:Start()
+		brainportal:Start(60)
+		brainportal2:Start(90)
+		--timerMadnessCD:Start(90)
+		warnBrainPortalSoon:Schedule(55)
+	elseif args:IsSpellID(313000, 64189, 312647) then
+		timerNextDeafeningRoar:Start()
 	end
 end
 
@@ -128,114 +153,138 @@ function mod:SPELL_SUMMON(args)
 		Guardians = Guardians + 1
 		warnGuardianSpawned:Show(Guardians)
 	end
+
 end
 
 function mod:SPELL_AURA_APPLIED(args)
-	if args:IsSpellID(312995) then		-- Brain Link
-		self:UnscheduleMethod("warnBrainLink")
+	local spellId = args.spellId
+	if spellId == 312995 or spellId == 312994 or spellId == 312996 or spellId == 63802 then
+		self:Unschedule(warnBrainLinkWarning)
 		brainLinkTargets[#brainLinkTargets + 1] = args.destName
 		if self.Options.SetIconOnBrainLinkTarget then
-			self:SetIcon(args.destName, brainLinkIcon, 30)
-			brainLinkIcon = brainLinkIcon - 1
+			self:SetIcon(args.destName, self.vb.brainLinkIcon)
 		end
+		self.vb.brainLinkIcon = self.vb.brainLinkIcon - 1
 		if args:IsPlayer() then
 			specWarnBrainLink:Show()
+			specWarnBrainLink:Play("linegather")
+			yellBrainLink:Yell()
+			yellBrainLinkFade:Countdown(spellId)
+			if self.Options.RangeFrame then
+				DBM.RangeCheck:Show(20)
+			end
 		end
-		mod:ScheduleMethod(0.2, "warnBrainLink")
-	elseif args:IsSpellID(63830, 63881, 312993, 313029) then   -- Malady of the Mind (Death Coil)
+		if #brainLinkTargets == 2 then
+			warnBrainLinkWarning(self)
+		else
+			self:Schedule(0.5, warnBrainLinkWarning, self)
+		end
+	elseif spellId == 63830 or spellId == 63881 or spellId == 312993 or spellId == 313029 then   -- Душевная болезнь (Death Coil)
 		if self.Options.SetIconOnFearTarget then
 			self:SetIcon(args.destName, 8, 30)
 		end
-		if self.Options.YellOnDeathCoil and args:IsPlayer() then
-			SendChatMessage(L.YellDeathCoil, "SAY")
-	end
-		local uId = DBM:GetRaidUnitId(args.destName)
-		if uId then
-			local inRange = CheckInteractDistance(uId, 2)
-			local x, y = GetPlayerMapPosition(uId)
-			if x == 0 and y == 0 then
-				SetMapToCurrentZone()
-				x, y = GetPlayerMapPosition(uId)
-			end
-			if inRange then
-				specWarnMaladyNear:Show(args.destName)
-				if self.Options.MaladyArrow then
-					DBM.Arrow:ShowRunAway(x, y, 12, 5)
-				end
-			end
-		end
-	elseif args:IsSpellID(64126, 313031) then	-- Squeeze
+	elseif spellId == 64126 or spellId == 313031 or spellId == 63138 then	-- Squeeze
 		warnSqueeze:Show(args.destName)
-		if args:IsPlayer() and self.Options.WarningSqueeze then
-			SendChatMessage(L.WarningYellSqueeze, "SAY")
+		if args:IsPlayer() then
+			yellSqueeze:Yell()
 		end
-	elseif args:IsSpellID(312989) then	-- Sara's Fervor
+	elseif spellId == 312989 or spellId == 63138 then	-- Sara's Fervor
 		warnFervor:Show(args.destName)
 		timerFervor:Start(args.destName)
 		if self.Options.SetIconOnFervorTarget then
-			self:SetIcon(args.destName, 7, 15)
+			self:SetIcon(args.destName, 7)
 		end
-		if args:IsPlayer() then
+		if args:IsPlayer() and self:AntiSpam(4, 1) then
 			specWarnFervor:Show()
+			specWarnFervor:Play("targetyou")
 		end
-	elseif args:IsSpellID(63894) then	-- Shadowy Barrier of Yogg-Saron (this is happens when p2 starts)
-		phase = 2
-		brainportal:Start(60)
-		warnBrainPortalSoon:Schedule(57)
-		specWarnBrainPortalSoon:Schedule(57)
+	elseif (spellId == 63894 or spellId == 64775) then	--and self.vb.phase < 2-- Shadowy Barrier of Yogg-Saron (this is happens when p2 starts)
+		self:SetStage(2)
 		warnP2:Show()
+		brainportal2:Start(60)
+		warnBrainPortalSoon:Schedule(57)
 		if self.Options.ShowSaraHealth then
-			DBM.BossHealth:RemoveBoss(33134)
-			if not self.Options.HealthFrame then
-				DBM.BossHealth:Hide()
+			DBM.BossHealth:RemoveBoss(33134)--33890
+			DBM.BossHealth:AddBoss(33890,L.Mozg)
+			DBM.BossHealth:AddBoss(33966, L.HevTentacle)
+		end
+	elseif args:IsSpellID(313001, 313002, 313027, 313028, 64167, 64163) then	-- Взгляд безумца (reduces sanity)
+		timerLunaricGaze:Start()
+		if self.vb.phase == 3 then
+			specWarnLunaricGaze:Show()
+			brainportal:Cancel()
+			brainportal2:Cancel()
+			if self.Options.ShowSaraHealth then
+				DBM.BossHealth:RemoveBoss(33890)--33890
+				DBM.BossHealth:RemoveBoss(33966)
 			end
 		end
-	elseif args:IsSpellID(313028, 312002) then	-- Lunatic Gaze (reduces sanity)
-		timerLunaricGaze:Start()
-	elseif args:IsSpellID(64465) then
-		timerEmpower:Start()
-		timerEmpowerDuration:Start()
-		warnEmpowerSoon:Schedule(40)
+	elseif spellId == 64465 then
+		if self.Options.SetIconOnBeacon then
+			self:ScanForMobs(args.destGUID, 2, beaconIcon, 1, 0.2, 10, "SetIconOnBeacon")
+		end
+		beaconIcon = beaconIcon - 1
+		if beaconIcon == 0 then
+			beaconIcon = 8
+		end
 	end
 end
 
 function mod:SPELL_AURA_REMOVED(args)
-	if args:IsSpellID(63894) then		-- Shadowy Barrier removed from Yogg-Saron (start p3)
-		if mod:LatencyCheck() then
-			self:SendSync("Phase3")			-- Sync this because you don't get it in your combat log if you are in brain room.
+	local spellId = args.spellId
+	if spellId == 64465 and self.Options.SetIconOnBeacon then
+		self:SetIcon(args.destName, 0)
+	end
+	if spellId == 312995 and self.Options.SetIconOnBrainLinkTarget then		-- Brain Link
+		self:SetIcon(args.destName, 0)
+		if args:IsPlayer() then
+			if self.Options.RangeFrame then
+				DBM.RangeCheck:Hide()
+			end
 		end
-	elseif args:IsSpellID(313028, 312002) then	-- Lunatic Gaze
+	elseif spellId == 312989 and self.Options.SetIconOnFervorTarget then	-- Sara's Fervor
+		self:SetIcon(args.destName, 0)
+	elseif spellId == 63894 or spellId == 64775 then		-- Shadowy Barrier removed from Yogg-Saron (start p3)
+		self:SendSync("Phase3")			-- Sync this because you don't get it in your combat log if you are in brain room.
+	elseif args:IsSpellID(313001, 313002, 313027, 313028, 64167, 64163) and self:AntiSpam(3, 2) then	-- Lunatic Gaze
 		timerNextLunaricGaze:Start()
+	elseif args:IsSpellID(313029, 312993, 63830, 63881) and self.Options.SetIconOnFearTarget then   -- Malady of the Mind (Death Coil)
+		self:SetIcon(args.destName, 0)
+	elseif spellId == 64465 then
+		if self.Options.SetIconOnBeacon then
+			self:ScanForMobs(args.destGUID, 2, 0, 1, 0.2, 12, "SetIconOnBeacon")
+		end
+	elseif spellId == 312995 or spellId == 312994 or spellId == 312996 or spellId == 63802 then
+		if args:IsPlayer() then
+			yellBrainLinkFade:Cancel()
+		end
 	end
 end
 
 function mod:SPELL_AURA_REMOVED_DOSE(args)
-	if args:IsSpellID(63050) and args.destGUID == UnitGUID("player") then
+	local spellId = args.spellId
+	if spellId == 63050 and args.destGUID == UnitGUID("player") then
 		if args.amount == 50 then
 			warnSanity:Show(args.amount)
-		elseif args.amount == 25 or args.amount == 15 or args.amount == 5 then
-			warnSanity:Show(args.amount)
+		elseif args.amount == 35 or args.amount == 25 or args.amount == 15 then
 			specWarnSanity:Show(args.amount)
 		end
 	end
 end
 
-function mod:UNIT_HEALTH(uId)
-	if phase == 1 and uId == "target" and self:GetUnitCreatureId(uId) == 33136 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.3 and not targetWarningsShown[UnitGUID(uId)] then
-		targetWarningsShown[UnitGUID(uId)] = true
-		specWarnGuardianLow:Show()
-	end
-end
-
 function mod:OnSync(msg)
 	if msg == "Phase3" then
-		warnP3:Show()
-		phase = 3
-		brainportal:Stop()
-        timerEmpower:Start()
-        warnEmpowerSoon:Schedule(40)
+		self:SetStage(3)
+		brainportal:Cancel()
+		brainportal2:Cancel()
 		warnBrainPortalSoon:Cancel()
-		timerNextDeafeningRoar:Start(30)
-		warnDeafeningRoarSoon:Schedule(25)
+		timerMaladyCD:Cancel()
+		timerBrainLinkCD:Cancel()
+		timerMadnessCD:Cancel()
+		timerEmpower:Cancel()
+		warnP3:Show()
+		warnEmpowerSoon:Schedule(40)
+		timerNextDeafeningRoar:Start()
+		warnDeafeningRoarSoon:Schedule(15)
 	end
 end

@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("NorthrendBeasts", "DBM-Coliseum")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision(("$Revision: 4385 $"):sub(12, -3))
+mod:SetRevision("20210501160500")
 mod:SetCreatureID(34797)
 mod:SetMinCombatTime(30)
 mod:SetUsedIcons(1, 2, 3, 4, 5, 6, 7, 8)
@@ -29,44 +29,44 @@ local warnBile				= mod:NewTargetAnnounce(66869, 3)
 local WarningSnobold		= mod:NewAnnounce("WarningSnobold", 4)
 local warnEnrageWorm		= mod:NewSpellAnnounce(68335, 3)
 
-local specWarnImpale3		= mod:NewSpecialWarning("SpecialWarningImpale3")
-local specWarnAnger3		= mod:NewSpecialWarning("SpecialWarningAnger3", "Tank|Healer")
-local specWarnFireBomb		= mod:NewSpecialWarningMove(66317)
+local specWarnImpale3		= mod:NewSpecialWarningStack(66331, nil, 3, nil, nil, 1, 6)
+local specWarnAnger3		= mod:NewSpecialWarningStack(66636, "Tank|Healer", 3, nil, nil, 1, 6)
 local specWarnSlimePool		= mod:NewSpecialWarningMove(67640)
-local specWarnToxin			= mod:NewSpecialWarningMove(67620)
-local specWarnBile			= mod:NewSpecialWarningYou(66869)
-local specWarnSilence		= mod:NewSpecialWarning("SpecialWarningSilence")
-local specWarnCharge		= mod:NewSpecialWarning("SpecialWarningCharge")
-local specWarnChargeNear	= mod:NewSpecialWarning("SpecialWarningChargeNear")
-local specWarnTranq			= mod:NewSpecialWarning("SpecialWarningTranq", "RemoveEnrage")
+local specWarnToxin			= mod:NewSpecialWarningMoveTo(67620, nil, nil, nil, 1, 2)
+local specWarnBile			= mod:NewSpecialWarningYou(66869, nil, nil, nil, 1, 2)
+local specWarnSilence		= mod:NewSpecialWarningSpell(66330, "SpellCaster", nil, nil, 1, 2)
+local specWarnCharge		= mod:NewSpecialWarningRun(52311, nil, nil, nil, 4, 2)
+local specWarnChargeNear	= mod:NewSpecialWarningClose(52311, nil, nil, nil, 3, 2)
+local specWarnTranq			= mod:NewSpecialWarningDispel(66759, "RemoveEnrage", nil, nil, 1, 2)
+local specWarnFireBomb		= mod:NewSpecialWarningMove(66317, nil, nil, nil, 1, 2)
 
 local enrageTimer			= mod:NewBerserkTimer(223)
-local timerCombatStart		= mod:NewTimer(23, "TimerCombatStart", 2457)
-local timerNextBoss			= mod:NewTimer(190, "TimerNextBoss", 2457)
-local timerSubmerge			= mod:NewTimer(45, "TimerSubmerge", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendBurrow.blp")
-local timerEmerge			= mod:NewTimer(10, "TimerEmerge", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendUnBurrow.blp")
+local timerCombatStart		= mod:NewCombatTimer(13)
+local timerNextBoss			= mod:NewTimer(190, "TimerNextBoss", 2457, nil, nil, 1)
+local timerSubmerge			= mod:NewTimer(45, "TimerSubmerge", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendBurrow.blp", nil, nil, 6)
+local timerEmerge			= mod:NewTimer(10, "TimerEmerge", "Interface\\AddOns\\DBM-Core\\textures\\CryptFiendUnBurrow.blp", nil, nil, 6)
 
-local timerBreath			= mod:NewCastTimer(5, 67650)
-local timerNextStomp		= mod:NewNextTimer(20, 66330)
-local timerNextImpale		= mod:NewNextTimer(10, 67477, nil, "Tank|Healer")
-local timerRisingAnger      = mod:NewNextTimer(20.5, 66636)
-local timerStaggeredDaze	= mod:NewBuffActiveTimer(15, 66758)
-local timerNextCrash		= mod:NewCDTimer(55, 67662)
-local timerSweepCD			= mod:NewCDTimer(17, 66794, nil, "Melee")
-local timerSlimePoolCD		= mod:NewCDTimer(12, 66883, nil, "Melee")
-local timerAcidicSpewCD		= mod:NewCDTimer(21, 66819)
-local timerMoltenSpewCD		= mod:NewCDTimer(21, 66820)
-local timerParalyticSprayCD	= mod:NewCDTimer(21, 66901)
-local timerBurningSprayCD	= mod:NewCDTimer(21, 66902)
-local timerParalyticBiteCD	= mod:NewCDTimer(25, 66824, nil, "Tank")
-local timerBurningBiteCD	= mod:NewCDTimer(15, 66879, nil, "Tank")
+local timerBreath			= mod:NewCastTimer(5, 67650, nil, nil, nil, 3)
+local timerNextStomp		= mod:NewNextTimer(20, 66330, nil, nil, nil, 2)
+local timerNextImpale		= mod:NewNextTimer(10, 67477, nil, "Tank|Healer", nil, 5, nil, DBM_CORE_TANK_ICON)
+local timerRisingAnger      = mod:NewNextTimer(20.5, 66636, nil, nil, nil, 1)
+local timerStaggeredDaze	= mod:NewBuffActiveTimer(15, 66758, nil, nil, nil, 5, nil, DBM_CORE_DAMAGE_ICON)
+local timerNextCrash		= mod:NewCDTimer(55, 67662, nil, nil, nil, 2)
+local timerSweepCD			= mod:NewCDTimer(17, 66794, nil, "Melee", nil, 3)
+local timerSlimePoolCD		= mod:NewCDTimer(12, 66883, nil, "Melee", nil, 3)
+local timerAcidicSpewCD		= mod:NewCDTimer(21, 66819, nil, "Tank", 2, 5, nil, DBM_CORE_TANK_ICON)
+local timerMoltenSpewCD		= mod:NewCDTimer(21, 66820, nil, "Tank", 2, 5, nil, DBM_CORE_TANK_ICON)
+local timerParalyticSprayCD	= mod:NewCDTimer(21, 66901, nil, nil, nil, 3)
+local timerBurningSprayCD	= mod:NewCDTimer(21, 66902, nil, nil, nil, 3)
+local timerParalyticBiteCD	= mod:NewCDTimer(25, 66824, nil, "Melee", nil, 3)
+local timerBurningBiteCD	= mod:NewCDTimer(15, 66879, nil, "Melee", nil, 3)
 
-mod:AddBoolOption("PingCharge")
-mod:AddBoolOption("SetIconOnChargeTarget", true)
-mod:AddBoolOption("SetIconOnBileTarget", true)
-mod:AddBoolOption("ClearIconsOnIceHowl", true)
-mod:AddBoolOption("RangeFrame")
+mod:AddSetIconOption("SetIconOnChargeTarget", 52311)
+mod:AddSetIconOption("SetIconOnBileTarget", 66869, false)
+mod:AddBoolOption("ClearIconsOnIceHowl", false)
 mod:AddBoolOption("IcehowlArrow")
+mod:AddBoolOption("PingCharge")
+mod:AddBoolOption("RangeFrame")
 
 local bileTargets			= {}
 local toxinTargets			= {}
@@ -78,24 +78,6 @@ local AcidmawDead	= false
 
 mod.vb.phase = 1
 
-local function updateHealthFrame(phase)
-	if phases[phase] then
-		return
-	end
-	phases[phase] = true
-	mod.vb.phase = phase
-
-	if phase == 1 then
-		DBM.BossHealth:Clear()
-		DBM.BossHealth:AddBoss(34796, L.Gormok)
-	elseif phase == 2 then
-		DBM.BossHealth:AddBoss(35144, L.Acidmaw)
-		DBM.BossHealth:AddBoss(34799, L.Dreadscale)
-	elseif phase == 3 then
-		DBM.BossHealth:AddBoss(34797, L.Icehowl)
-	end
-end
-
 function mod:OnCombatStart(delay)
 	DBM:FireCustomEvent("DBM_EncounterStart", 34797, "The Beasts of Northrend")
 	table.wipe(bileTargets)
@@ -105,6 +87,7 @@ function mod:OnCombatStart(delay)
 	DreadscaleActive = true
 	DreadscaleDead = false
 	AcidmawDead = false
+	self.vb.phase = 1
 	specWarnSilence:Schedule(37-delay)
 	if self:IsDifficulty("heroic10", "heroic25") then
 		timerNextBoss:Start(175 - delay)
@@ -113,7 +96,6 @@ function mod:OnCombatStart(delay)
 	timerNextStomp:Start(38-delay)
 	timerRisingAnger:Start(48-delay)
 	timerCombatStart:Start(-delay)
-	updateHealthFrame(1)
 end
 
 function mod:OnCombatEnd(wipe)
@@ -275,13 +257,7 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 			self:ClearIcons()
 		end
 		if target == UnitName("player") then
---[[			local x, y = GetPlayerMapPosition(target)
-			if x == 0 and y == 0 then
-				SetMapToCurrentZone()
-				x, y = GetPlayerMapPosition(target)
-			end--]]
 			specWarnCharge:Show()
---			DBM.Arrow:ShowRunAway(x, y, 12, 5)
 			if self.Options.PingCharge then
 				Minimap:PingLocation()
 			end
@@ -309,15 +285,17 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg, _, _, _, target)
 end
 
 function mod:CHAT_MSG_MONSTER_YELL(msg)
-	if msg == L.Phase2 or msg:find(L.Phase2) then
+	if msg == L.CombatStart or msg:find(L.CombatStart) then
+		timerCombatStart:Start()
+	elseif msg == L.Phase2 or msg:find(L.Phase2) then
 		self:ScheduleMethod(17, "WormsEmerge")
-		timerCombatStart:Show(15)
-		updateHealthFrame(2)
+		timerCombatStart:Start(15)
+		self.vb.phase = 2
 		if self.Options.RangeFrame then
 			DBM.RangeCheck:Show(10)
 		end
 	elseif msg == L.Phase3 or msg:find(L.Phase3) then
-		updateHealthFrame(3)
+		self.vb.phase = 3
 		if self:IsDifficulty("heroic10", "heroic25") then
 			enrageTimer:Start()
 		end

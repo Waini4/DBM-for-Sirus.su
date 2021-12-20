@@ -35,12 +35,17 @@ local warnRing			= mod:NewSoonAnnounce(308563, 3) -- ослепляющее ко
 local warnPhase2Soon   	= mod:NewPrePhaseAnnounce(2)
 local warnPhase2     	= mod:NewPhaseAnnounce(2)
 local warnKol    		= mod:NewTargetAnnounce(308563, 2) -- Кольцо
+local warnFlashVoid		= mod:NewSoonAnnounce(308585, 3)
 
 local specWarnHelp		= mod:NewSpecialWarningAdds(308559, nil, nil, nil, 1, 2)  -- Послушники
 local specWarnDebaf  	= mod:NewSpecialWarningRun(308544, nil, nil, nil, 3, 4) -- Дебаф 1я фаза
 local specWarnFlashVoid = mod:NewSpecialWarningLookAway(308585, nil, nil, nil, 2, 2) -- фир 2 фаза
+local yellWrathH		= mod:NewYell(308548, nil, nil, nil, "YELL")
+local yellWrathHOb		= mod:NewYell(42783, nil, nil, nil, "YELL")
+local yellWrathHFades	= mod:NewShortFadesYell(308548, nil, nil, nil, "YELL")
+local yellWrathHObFades	= mod:NewShortFadesYell(42783, nil, nil, nil, "YELL")
 
-local timerNextHelp		= mod:NewTimer(40, "TimerNextHelp", 308558, "Tank|Healer", nil, 3, DBM_CORE_TANK_ICON)
+local timerNextHelp		= mod:NewTimer(40, "TimerNextHelp", 308558, nil, nil, 3, DBM_CORE_TANK_ICON)
 local timerWrathH		= mod:NewTargetTimer(6, 308548, nil, "RemoveEnrage", nil, 1, nil, DBM_CORE_ENRAGE_ICON, nil, 1, 5)
 local timerNextWrathH	= mod:NewCDTimer(43, 308548, nil, "RemoveEnrage", nil, 1, nil, DBM_CORE_ENRAGE_ICON)
 local timerFlashVoid    = mod:NewCDTimer(75, 308585, nil, "RemoveEnrage", nil, 6, nil, DBM_CORE_HEROIC_ICON)
@@ -53,16 +58,18 @@ local warned_preP1 = false
 local warned_preP2 = false
 
 mod:AddBoolOption("Zrec")
+mod:AddBoolOption("RangeFrame", true)
 
-mod.vb.phase = 0
+mod.vb.Fear = 0
 
 function mod:OnCombatStart(delay)
 	DBM:FireCustomEvent("DBM_EncounterStart", 18805, "High Astromancer Solarian")
 	if mod:IsDifficulty("heroic25") then
-		timerNextHelp:Start()
-	    timerNextWrathH:Start()
-		self.vb.phase = 1
+		timerNextHelp:Start(-delay)
+	    timerNextWrathH:Start(-delay)
+		self:SetStage(1)
 	else
+		self.vb.Fear = 0
 	    timerAdds:Start()
 		warnAddsSoon:Schedule(52)
 	end
@@ -107,18 +114,22 @@ end
 --------------------------героик--------------------------
 
 function mod:SPELL_CAST_START(args)
-	if args:IsSpellID(308562) then -- кольцо
+	local spellId = args.spellId
+	if spellId == 308562 then -- кольцо
 		warnRing:Schedule(0)
-	elseif args:IsSpellID(308558) then -- послушники
+	elseif spellId == 308558 then -- послушники
 		timerNextHelp:Schedule(80)
 		specWarnHelp:Show(args.sourceName)
 		priestsH = true
 		provid	 = true
-	elseif args:IsSpellID(308585) then -- УЖАС
-		specWarnFlashVoid:Show(args.sourceName)
+	elseif spellId == 308585 then -- УЖАС
+
+		specWarnFlashVoid:Show(self.vb.Fear)
 		timerFlashVoid:Schedule(5)
-	elseif args:IsSpellID(308576) then
-		self.vb.phase = 2
+	elseif spellId == 308576 then
+		self:SetStage(2)
+		timerNextHelp:Stop()
+		warnFlashVoid:Schedule(70)
 		timerFlashVoid:Start()
 		warnPhase2:Show()
 	end
@@ -126,25 +137,32 @@ end
 
 
 function mod:SPELL_AURA_APPLIED(args)
-	if args:IsSpellID(308548) then    -- хм
+	local spellId = args.spellId
+	if spellId == 308548 then    -- хм
 		timerNextWrathH:Start()
 		timerWrathH:Start(args.destName)
 		self:SetIcon(args.destName, 8, 6)
-	elseif args:IsSpellID(308544) and self.vb.phase == 1 then -- Стаки луча
+		if args:IsPlayer() then
+			yellWrathH:Yell()
+			yellWrathHFades:Countdown(spellId)
+		end
+	elseif spellId == 308544 and self.vb.phase == 1 then -- Стаки луча
 		if args:IsPlayer() then
 			specWarnDebaf:Show()
 		end
-	elseif args:IsSpellID(308563) then -- Ослепление
+	elseif spellId == 308563 then -- Ослепление
 		KolTargets[#KolTargets + 1] = args.destName
 		self:UnscheduleMethod("Kolzo")
 		self:ScheduleMethod(0.1, "Kolzo")
-	elseif args:IsSpellID(42783) then   -- об
+	elseif spellId == 42783 then   -- об
 		timerNextWrathN:Start()
 		warnWrathN:Show(args.destName)
 		timerWrathN:Start(args.destName)
 		self:SetIcon(args.destName, 8, 6)
 		if args:IsPlayer() then
 			specWarnWrathN:Show()
+			yellWrathHOb:Yell()
+			yellWrathHObFades:Countdown(spellId)
 		end
 	end
 end
@@ -203,6 +221,7 @@ function mod:UNIT_HEALTH(uId)
 	elseif not warned_preP2 and self:GetUnitCreatureId(uId) == 18805 and UnitHealth(uId) / UnitHealthMax(uId) <= 0.35 then
 		warned_preP2 = true
 		warnPhase2:Show()
+		timerAdds:Stop()
 	end
 end
 

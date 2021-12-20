@@ -3,7 +3,7 @@
 DBM_HOW_TO_USE_MOD					= "Добро пожаловать в DBM. Наберите /dbm help чтобы получить список поддерживаемых команд. Для доступа к настройкам наберите /dbm в чате. Загрузите конкретные зоны вручную чтобы настроить определенных боссов по вашему вкусу. DBM установит настройки по умолчанию для вашей специализации, но вы возможно захотите настроить их более тонко."
 DBM_SILENT_REMINDER					= "Напоминание: DBM всё еще в тихом режиме."
 
-DBM_CORE_UPDATEREMINDER_URL			= "https://forum.sirus.su/threads/dbm-dlja-sirusa.89486"
+DBM_CORE_UPDATEREMINDER_URL			= "https://github.com/Admiliral/DBM-for-Sirus.su"
 
 DBM_COPY_URL_DIALOG					= "Копировать ссылку"
 
@@ -68,6 +68,9 @@ DBM_CORE_ALLMOD_DEFAULT_LOADED		= "Настройки по умолчанию б
 DBM_CORE_ALLMOD_STATS_RESETED		= "Вся статистика модуля была сброшена."
 DBM_CORE_MOD_DEFAULT_LOADED			= "Настройки по умолчанию для этого боя были загружены."
 DBM_CORE_SOUNDKIT_MIGRATION			= "Один или более ваших звуков предупреждений/спец-предупреждений были сброшены на по умолчанию из-за несовместимости с патчем 8.2 (звуки должны находится в папке Interface чтобы проигрывать используя путь, или используйте SoundKit ID)"
+DBM_CORE_WORLDBOSS_ENGAGED			= "В вашем игровом мире возможно начался бой с %s (%s процентов здоровья, отправил %s)."
+DBM_CORE_WORLDBOSS_DEFEATED			= "%s возможно был побеждён в вашем игровом мире (отправил %s)."
+
 
 DBM_CORE_TIMER_FORMAT_SECS			= "%.2f сек"
 DBM_CORE_TIMER_FORMAT_MINS			= "%d мин"
@@ -172,7 +175,7 @@ DBM_CORE_SLASHCMD_HELP				= {
 }
 
 DBM_ERROR_NO_PERMISSION				= "У вас недостаточно прав, для выполнение этой операции."
-
+DBM_CORE_RAID_INFO_WORLD_BOSS 		= "Мировой босс"
 DBM_CORE_BOSSHEALTH_HIDE_FRAME		= "Скрыть"
 
 DBM_CORE_ALLIANCE					= "Альянс"
@@ -194,6 +197,18 @@ DBM_CORE_ANNOUNCE_PULL_TARGET		= "Атакуем %s через %d сек. (от�
 DBM_CORE_ANNOUNCE_PULL_NOW_TARGET	= "Атакуем %s!"
 DBM_CORE_GEAR_WARNING_WEAPON		= "Внимание: Проверьте надето ли у вас корректное оружие."
 DBM_CORE_GEAR_FISHING_POLE			= "Удочки"
+
+DBM_CORE_LOCK_FRAME						= "Закрепить окно"
+DBM_CORE_INFOFRAME_SHOW_SELF				= "Всегда показывать вашу энергию"		-- Always show your own power value even if you are below the threshold
+DBM_CORE_INFOFRAME_SETLINES				= "Максимальное число строк"
+DBM_CORE_INFOFRAME_SETCOLS					= "Максимальное число столбцов"
+DBM_CORE_INFOFRAME_LINESDEFAULT			= "По умолчанию"
+DBM_CORE_INFOFRAME_LINES_TO				= "%d строк"
+DBM_CORE_INFOFRAME_COLS_TO					= "%d столбцов"
+DBM_CORE_INFOFRAME_POWER					= "Power"
+DBM_CORE_INFOFRAME_AGGRO					= "Угроза"
+DBM_CORE_INFOFRAME_MAIN					= "Main:"--Main power
+DBM_CORE_INFOFRAME_ALT						= "Alt:"--Alternate Power
 
 DBM_CORE_ACHIEVEMENT_TIMER_SPEED_KILL = "Быстрое убийство"
 
@@ -237,6 +252,7 @@ DBM_CORE_AUTO_ANNOUNCE_OPTIONS.stagechange	= "Объявлять смены фа
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.prestage 	= "Предупреждать заранее о фазе %s"
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.count 		= "Предупреждение для $spell:%s (со счетчиком)"
 DBM_CORE_AUTO_ANNOUNCE_OPTIONS.stack 		= "Объявлять количество стаков $spell:%s"
+DBM_CORE_AUTO_ANNOUNCE_OPTIONS.sound		= "Включить звуковое сопровождение (Если установлен DBM-VoisePack)"
 
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.spell				= "%s!"
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.ends				= "%s заканчивается"
@@ -270,6 +286,7 @@ DBM_CORE_AUTO_SPEC_WARN_TEXTS.soak				= "%s - перекройте"
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.jump				= "%s - подпрыгните"
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.run 				= "%s - убегайте"
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.cast 				= "%s - прекратите чтение заклинаний"
+DBM_CORE_AUTO_SPEC_WARN_TEXTS.lookawayi			= "%s - отвернитесь"
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.lookaway			= "%s на %%s - отвернитесь"
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.reflect 			= "%s на |3-5(>%%s<) - прекратите атаку"
 DBM_CORE_AUTO_SPEC_WARN_TEXTS.count 			= "%s! (%%s)"
@@ -315,6 +332,7 @@ DBM_CORE_AUTO_SPEC_WARN_OPTIONS.jump			= "Спец-предупреждение 
 DBM_CORE_AUTO_SPEC_WARN_OPTIONS.run 			= "Спец-предупреждение \"убегайте\" для $spell:%s"
 DBM_CORE_AUTO_SPEC_WARN_OPTIONS.cast 			= "Спец-предупреждение \"прекратите чтение заклинаний\" для $spell:%s"
 DBM_CORE_AUTO_SPEC_WARN_OPTIONS.lookaway		= "Спец-предупреждение \"отвернитесь\" для $spell:%s"
+DBM_CORE_AUTO_SPEC_WARN_OPTIONS.lookawayi		= "Спец-предупреждение \"отвернитесь\" для $spell:%s"
 DBM_CORE_AUTO_SPEC_WARN_OPTIONS.reflect 		= "Спец-предупреждение \"прекратите атаку\" для $spell:%s"
 DBM_CORE_AUTO_SPEC_WARN_OPTIONS.count 			= "Спец-предупреждение (со счетчиком) для $spell:%s"
 DBM_CORE_AUTO_SPEC_WARN_OPTIONS.stack 			= "Спец-предупреждение, когда на вас >=%d стаков $spell:%s"
@@ -347,25 +365,25 @@ DBM_CORE_AUTO_TIMER_TEXTS.adds			= "Прибытие аддов"
 DBM_CORE_AUTO_TIMER_TEXTS.addscustom	= "Прибытие аддов (%%s)"
 DBM_CORE_AUTO_TIMER_TEXTS.roleplay		= GUILD_INTEREST_RP
 
-DBM_CORE_AUTO_TIMER_OPTIONS.target 		= "Отсчет времени действия дебаффа $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.cast 		= "Отсчет времени применения заклинания $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.castcount	= "Отсчет времени применения заклинания (со счетчиком) для $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.castsource	= "Отсчет времени применения заклинания (с источником) для $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.active 		= "Отсчет времени действия $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.fades		= "Отсчет времени до спадения $spell:%s с игроков"
-DBM_CORE_AUTO_TIMER_OPTIONS.ai			= "Отсчет времени до восстановления $spell:%s (ИИ)"
-DBM_CORE_AUTO_TIMER_OPTIONS.cd 			= "Отсчет времени до восстановления $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.cdcount 	= "Отсчет времени до восстановления $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.cdsource	= "Отсчет времени до восстановления $spell:%s (с источником)"
-DBM_CORE_AUTO_TIMER_OPTIONS.cdspecial	= "Отсчет времени до восстановления спец-способности"
-DBM_CORE_AUTO_TIMER_OPTIONS.next 		= "Отсчет времени до следующего $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.nextcount 	= "Отсчет времени до следующего $spell:%s"
-DBM_CORE_AUTO_TIMER_OPTIONS.nextsource	= "Отсчет времени до следующего $spell:%s (с источником)"
-DBM_CORE_AUTO_TIMER_OPTIONS.nextspecial	= "Отсчет времени до следующей спец-способности"
-DBM_CORE_AUTO_TIMER_OPTIONS.achievement = "Отсчет времени для %s"
-DBM_CORE_AUTO_TIMER_OPTIONS.stage		= "Отсчет времени до следующей фазы"
-DBM_CORE_AUTO_TIMER_OPTIONS.adds		= "Отсчет времени до прибытия аддов"
-DBM_CORE_AUTO_TIMER_OPTIONS.addscustom	= "Отсчет времени до прибытия аддов"
+DBM_CORE_AUTO_TIMER_OPTIONS.target 		= "Отсчет времени действия дебаффа $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.cast 		= "Отсчет времени применения заклинания $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.castcount	= "Отсчет времени применения заклинания (со счетчиком) для $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.castsource	= "Отсчет времени применения заклинания (с источником) для $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.active 		= "Отсчет времени действия $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.fades		= "Отсчет времени до спадения $spell:%s с игроков (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.ai			= "Отсчет времени до восстановления $spell:%s (ИИ) (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.cd 			= "Отсчет времени до восстановления $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.cdcount 	= "Отсчет времени до восстановления $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.cdsource	= "Отсчет времени до восстановления $spell:%s (с источником) (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.cdspecial	= "Отсчет времени до восстановления спец-способности (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.next 		= "Отсчет времени до следующего $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.nextcount 	= "Отсчет времени до следующего $spell:%s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.nextsource	= "Отсчет времени до следующего $spell:%s (с источником) (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.nextspecial	= "Отсчет времени до следующей спец-способности (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.achievement = "Отсчет времени для %s (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.stage		= "Отсчет времени до следующей фазы (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.adds		= "Отсчет времени до прибытия аддов (%ds)"
+DBM_CORE_AUTO_TIMER_OPTIONS.addscustom	= "Отсчет времени до прибытия аддов (%ds)"
 DBM_CORE_AUTO_TIMER_OPTIONS.roleplay	= "Отсчет времени для ролевой игры"
 
 DBM_CORE_AUTO_ICONS_OPTION_TEXT			= "Устанавливать метки на цели заклинания $spell:%s"
