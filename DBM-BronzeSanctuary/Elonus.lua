@@ -48,7 +48,7 @@ local specWarnReturnInterrupt				= mod:NewSpecialWarningInterrupt(312214, "HasIn
 local specWarnReturn						= mod:NewSpecialWarningSwitch(312214, "-Healer", nil, nil, 1, 2)
 local specWarnTemporalCascadeYou			= mod:NewSpecialWarningYou(312206, nil, nil, nil, 3, 2)
 local specWarnReverseCascadeMoveAway		= mod:NewSpecialWarningMoveAway(312206, nil, nil, nil, 1, 2)
-local yellTemporalCascade					= mod:NewYell(312206, nil, nil, nil, "YELL")
+local yellTemporalCascade					= mod:NewYell(312206, nil, nil, nil, "YELL") --317158
 local yellReverseCascade					= mod:NewYell(312208, nil, nil, nil, "YELL")
 local yellTemporalCascadeFade				= mod:NewShortFadesYell(312206, nil, nil, nil, "YELL")
 local yellReverseCascadeFade				= mod:NewShortFadesYell(312208, nil, nil, nil, "YELL")
@@ -69,13 +69,15 @@ mod:AddBoolOption("AnnounceReverCasc", false)
 mod:AddBoolOption("AnnounceErap", false)
 mod:AddBoolOption("AnnounceTempCasc", false)
 mod:AddBoolOption("BossHealthFrame", true, "misc")
+mod:AddBoolOption("RangeFrame", true)
 
 
 local RevCascTargets = {}
+local TempCascTargets = {}
 local ErapTargets = {}
 local ErapIcons = 3
 local RevCascIcons = 6
-mod.vb.TempCascIcon = 8
+local TempCascIcon = 8
 mod.vb.RetCount = 0
 mod.vb.RepCount = 0
 mod.vb.ErapCount = 0
@@ -90,7 +92,7 @@ do
 	local maxAbsorb = diffMaxAbsorb[DBM:GetCurrentInstanceDifficulty()] or 0
 
 	local function getShieldHP()
-		return math.max(1, math.floor(damaged / maxAbsorb * 100))
+		return math.max(100, math.floor(damaged / maxAbsorb * 100))
 	end
 
 	function mod:SPELL_DAMAGE(_, _, _, destGUID, _, _, _, _, _, _, _, absorbed)
@@ -122,7 +124,6 @@ function mod:OnCombatStart(delay)
 	self.vb.RetCount = 0
 	self.vb.RepCount = 0
 	self.vb.ErapCount = 0
-	self.vb.TempCascIcon = 8
 	TemporalCascade:Start()
 	ResonantScream:Start()
 	specWarnResonantScream:Schedule(11)
@@ -163,8 +164,7 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	local spellId = args.spellId
-	local icon = self.vb.TempCascIcon
-	if spellId == 312206 then
+	if spellId == 312206 or spellId == 317158 then
 		TemporalCascade:Start()
 		warnTemporalCascade:Show(args.destName)
 		TemporalCascadeBuff:Show(args.destName)
@@ -173,17 +173,17 @@ function mod:SPELL_AURA_APPLIED(args)
 			yellTemporalCascade:Yell()
 			yellTemporalCascadeFade:Countdown(spellId)
 		end
-		if self.Options.TempCascIcon then
-			self:SetIcon(args.destName, icon, 10)
-		end
-		self.vb.TempCascIcon = self.vb.TempCascIcon - 1
 		if mod.Options.AnnounceTempCasc then
 			if DBM:GetRaidRank() > 0 then
-				SendChatMessage(L.TempCasc:format(icon, args.destName), "RAID_WARNING")
+				SendChatMessage(L.TempCasc:format(TempCascIcon, args.destName), "RAID_WARNING")
 			else
-				SendChatMessage(L.TempCasc:format(icon, args.destName), "RAID")
+				SendChatMessage(L.TempCasc:format(TempCascIcon, args.destName), "RAID")
 			end
 		end
+		if self.Options.SetIconTempCascIcon then
+			self:SetIcon(args.destName, TempCascIcon, 10)
+		end
+		TempCascIcon = TempCascIcon - 1
 	elseif spellId == 312208 or spellId == 317160 then
 		RevCascTargets[#RevCascTargets + 1] = args.destName
 		ReverseCascadeBuff:Start()
@@ -191,6 +191,9 @@ function mod:SPELL_AURA_APPLIED(args)
 			specWarnReverseCascadeMoveAway:Show()
 			yellReverseCascade:Yell()
 			yellReverseCascadeFade:Countdown(spellId)
+			if self.Options.RangeFrame then
+				DBM.RangeCheck:Show(8)
+			end
 		end
 		self:ScheduleMethod(0.1, "SetRevCascIcons")
 	elseif spellId == 312204 or spellId == 317156 then
@@ -248,6 +251,7 @@ function mod:SPELL_AURA_REMOVED(args)
 		if self.Options.TempCascIcon then
 			self:SetIcon(args.destName, 0)
 		end
+		TempCascIcon = 8
 		if args:IsPlayer() then
 			yellTemporalCascadeFade:Cancel()
 		end
@@ -257,6 +261,9 @@ function mod:SPELL_AURA_REMOVED(args)
 		end
 		if args:IsPlayer() then
 			yellReverseCascadeFade:Cancel()
+			if self.Options.RangeFrame then
+				DBM.RangeCheck:Hide()
+			end
 		end
 	elseif spellId == 312213 or spellId == 317163 then
 		specWarnReturnInterrupt:Show()
