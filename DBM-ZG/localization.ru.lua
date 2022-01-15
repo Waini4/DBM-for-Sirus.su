@@ -15,12 +15,7 @@ L:SetWarningLocalization{
 }
 L:SetOptionLocalization{
 	warnPhase2Soon	= "Объявлять о скором начале 2-ой фазы",
-	Taimeri ="Таймеры кастов для плебеев :)",
 	RangeFrame		= "Показывать окно дистанции"
-}
-
-L:SetMiscLocalization{
-	Rezonans			= "/dbm broadcast timer 45 резонанс"
 }
 
 -------------------
@@ -66,7 +61,7 @@ L:SetOptionLocalization({
 L:SetMiscLocalization({
 	PriestDied	= "%s dies.",
 	YellPhase2	= "Shirvallah, fill me with your RAGE!",
-	YellKill	= "Hakkar binds me no more!  Peace at last!"
+	YellKill	= "Hakkar binds me no more! Peace at last!"
 })
 
 -------------------
